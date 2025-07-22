@@ -1,0 +1,61 @@
+.training-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4rem 6%;
+  background-color: #ffffff;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.hero-content {
+  max-width: 600px;
+}
+
+.hero-title {
+  font-size: 3rem;
+  color: #2d2f4a;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: #333333;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.hero-btn {
+  background: linear-gradient(to right, #d96ba0, #f598c2);
+  color: #fff;
+  padding: 0.9rem 2rem;
+  border: none;
+  border-radius: 2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.hero-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(217, 107, 160, 0.3);
+}
+
+.hero-image-wrapper {
+  flex: 1;
+  text-align: center;
+}
+
+.hero-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 1rem;
+  transition: filter 0.4s ease, transform 0.4s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.hero-image:hover {
+  filter: brightness(1.05);
+  transform: scale(1.02);
+}
