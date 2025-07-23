@@ -1,81 +1,94 @@
-import React, { useState, useRef } from 'react';
-import { motion } from 'framer-motion';
-import Toast from '../components/Toast';
-import '../styles/PostGenerator.css';
+import React, { useState, useRef } from "react";
+import {
+  FaInstagram,
+  FaLinkedin,
+  FaTwitter,
+  FaWhatsapp,
+  FaFacebook,
+  FaTelegram,
+  FaReddit,
+  FaYoutube,
+  FaComments, // Placeholder for Threads
+} from "react-icons/fa";
+import Toast from "../components/common/Toast";
+import { motion } from "framer-motion";
+import "../styles/PostGenerator.css";
 
-function PostGenerator() {
-  const [userInput, setUserInput] = useState('');
+const socialPlatforms = [
+  { name: "Instagram", icon: <FaInstagram /> },
+  { name: "LinkedIn", icon: <FaLinkedin /> },
+  { name: "Twitter", icon: <FaTwitter /> },
+  { name: "WhatsApp", icon: <FaWhatsapp /> },
+  { name: "Facebook", icon: <FaFacebook /> },
+  { name: "Telegram", icon: <FaTelegram /> },
+  { name: "Threads", icon: <FaComments /> }, // Using FaComments icon
+  { name: "Reddit", icon: <FaReddit /> },
+  { name: "YouTube", icon: <FaYoutube /> },
+];
+
+const PostGenerator = () => {
+  const [userInput, setUserInput] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [platformPosts, setPlatformPosts] = useState({});
-  const [selectedPlatform, setSelectedPlatform] = useState('');
-  const [toastMessage, setToastMessage] = useState('');
+  const [selectedPlatform, setSelectedPlatform] = useState("");
+  const [toastMessage, setToastMessage] = useState("");
   const generatorRef = useRef(null);
 
-  const socialPlatforms = [
-    { name: 'Instagram', icon: '📸' },
-    { name: 'LinkedIn', icon: '💼' },
-    { name: 'Twitter', icon: '🐦' },
-    { name: 'Facebook', icon: '📘' },
-    { name: 'WhatsApp', icon: '🟢' },
-    { name: 'Telegram', icon: '📢' },
-    { name: 'Threads', icon: '🧵' },
-    { name: 'Reddit', icon: '👽' },
-    { name: 'YouTube', icon: '🎥' },
-  ];
-
-  const handleGenerate = async () => {
-  if (!userInput && !selectedFile) {
-    setToastMessage('Please enter content or upload a file.');
-    return;
-  }
-
-  try {
-    const response = await fetch('http://localhost:5000/api/post/generate', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ content: userInput }),
-    });
-
-    const data = await response.json();
-
-    if (data?.post) {
-      const baseText = data.post;
-      const fileName = selectedFile ? `Uploaded: ${selectedFile.name}` : '';
-
-      const generated = {
-        Instagram: `📸 ${baseText}\n${fileName}\n#creative #instagram`,
-        LinkedIn: `💼 ${baseText}\n${fileName}\n#ProfessionalGrowth #LinkedInUpdate`,
-        Twitter: `🐦 ${baseText.slice(0, 220)}\n${fileName}`,
-        WhatsApp: `🟢 Share this with your circle: ${baseText}\n${fileName}`,
-        Facebook: `📘 ${baseText}\n${fileName}`,
-        Telegram: `📢 Update:\n${baseText}\n${fileName}`,
-        Threads: `🧵 ${baseText}\n${fileName}`,
-        Reddit: `👽 r/dev - ${baseText}\nFeedback welcome!`,
-        YouTube: `🎥 Video incoming! ${baseText}\n${fileName}`,
-      };
-
-      setPlatformPosts(generated);
-      setSelectedPlatform('');
-      setToastMessage('Post generated! Select a platform to view.');
-    } else {
-      setToastMessage('Failed to generate post.');
+  const scrollToGenerator = () => {
+    if (generatorRef.current) {
+      generatorRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  } catch (err) {
-    console.error('Frontend fetch error:', err);
-    setToastMessage('An error occurred while generating the post.');
-  }
-};
-
-
-  const handleCopy = (text) => {
-    navigator.clipboard.writeText(text);
-    setToastMessage('Copied to clipboard!');
   };
 
-  const scrollToGenerator = () => {
-    generatorRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file);
+    setToastMessage(`File uploaded: ${file.name}`);
+  };
+
+  const handleGenerate = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/post/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: userInput }),
+      });
+
+      const data = await response.json();
+
+      if (data?.post) {
+        const baseText = data.post;
+        const fileName = selectedFile ? `Uploaded: ${selectedFile.name}` : "";
+
+        const generated = {
+          Instagram: `📸 ${baseText}\n${fileName}\n#creative #instagram`,
+          LinkedIn: `💼 ${baseText}\n${fileName}\n#ProfessionalGrowth #LinkedInUpdate`,
+          Twitter: `🔎 ${baseText.slice(0, 220)}\n${fileName}`,
+          WhatsApp: `🟢 Share this with your circle: ${baseText}\n${fileName}`,
+          Facebook: `📘 ${baseText}\n${fileName}`,
+          Telegram: `📢 Update:\n${baseText}\n${fileName}`,
+          Threads: `🧵 ${baseText}\n${fileName}`,
+          Reddit: `👽 r/dev - ${baseText}\nFeedback welcome!`,
+          YouTube: `🎥 Video incoming! ${baseText}\n${fileName}`,
+        };
+
+        setPlatformPosts(generated);
+        setSelectedPlatform("");
+        setToastMessage("Post generated! Select a platform to view.");
+      } else {
+        setToastMessage("Failed to generate post.");
+      }
+    } catch (err) {
+      console.error("Frontend fetch error:", err);
+      setToastMessage("An error occurred while generating the post.");
+    }
+  };
+
+  const handleCopy = () => {
+    if (selectedPlatform && platformPosts[selectedPlatform]) {
+      navigator.clipboard.writeText(platformPosts[selectedPlatform]);
+      setToastMessage(`${selectedPlatform} post copied!`);
+    }
   };
 
   return (
@@ -132,25 +145,24 @@ function PostGenerator() {
         </button>
       </motion.section>
 
-      <div style={{ marginTop: '4rem' }}></div>
+      <div style={{ marginTop: '4rem' }} />
 
-      {/* Generator */}
+      {/* Generator Section */}
       <motion.section
-  className="hero"
-  ref={generatorRef}
-  initial={{ opacity: 0, scale: 0.9 }}
-  animate={{ opacity: 1, scale: 1 }}
-  transition={{ duration: 0.8 }}
-  style={{
-    maxWidth: '1200px',
-    width: '95%',
-    margin: '0 auto',
-    backgroundColor: '#2D2F4A',
-    borderRadius: '20px',
-    padding: '3rem 2rem',
-  }}
->
-
+        className="hero"
+        ref={generatorRef}
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8 }}
+        style={{
+          maxWidth: '1200px',
+          width: '95%',
+          margin: '0 auto',
+          backgroundColor: '#2D2F4A',
+          borderRadius: '20px',
+          padding: '3rem 2rem',
+        }}
+      >
         <h1>
           Create your next social media post with <span>one click ✨</span>
         </h1>
@@ -171,6 +183,7 @@ function PostGenerator() {
 
         <button onClick={handleGenerate}>✨ Generate Post</button>
 
+        {/* Platform Icons */}
         {Object.keys(platformPosts).length > 0 && (
           <motion.div
             className="platform-icons"
@@ -185,11 +198,7 @@ function PostGenerator() {
               initial="hidden"
               animate="visible"
               variants={{
-                visible: {
-                  transition: {
-                    staggerChildren: 0.1,
-                  },
-                },
+                visible: { transition: { staggerChildren: 0.1 } },
               }}
             >
               {socialPlatforms.map(({ name, icon }) => (
@@ -216,6 +225,7 @@ function PostGenerator() {
           </motion.div>
         )}
 
+        {/* Selected Platform Output */}
         {selectedPlatform && (
           <motion.div
             className="selected-post"
@@ -242,14 +252,12 @@ function PostGenerator() {
                 color: '#000',
               }}
             />
-            <button onClick={() => handleCopy(platformPosts[selectedPlatform])}>
-              Copy to Clipboard
-            </button>
+            <button onClick={handleCopy}>Copy to Clipboard</button>
           </motion.div>
         )}
       </motion.section>
 
-      <div style={{ marginTop: '5rem' }}></div>
+      <div style={{ marginTop: '5rem' }} />
 
       {/* Why Use Section */}
       <motion.section
@@ -305,16 +313,14 @@ function PostGenerator() {
         transition={{ duration: 0.7 }}
       >
         <h2>One tool, endless possibilities</h2>
-        <p>
-          Explore how our toolkit makes content creation and growth so much simpler.
-        </p>
+        <p>Explore how our toolkit makes content creation and growth so much simpler.</p>
         <button onClick={scrollToGenerator}>Get started now →</button>
       </motion.section>
 
-      {/* Toast */}
+      {/* Toast Notification */}
       {toastMessage && <Toast message={toastMessage} onClose={() => setToastMessage('')} />}
     </div>
   );
-}
+};
 
 export default PostGenerator;

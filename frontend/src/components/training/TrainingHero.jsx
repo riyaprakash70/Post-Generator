@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import './TrainingHero.css';
+import '../assets/TrainingHero.css'; // ✅ Use consistent path convention
 import heroImage from '../assets/hero.png';
 
 const TrainingHero = () => {
@@ -25,7 +25,12 @@ const TrainingHero = () => {
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 1, ease: 'easeOut' }}
       >
-        <img src={heroImage} alt="Training Hero" className="hero-image" />
+        <img
+          src={heroImage}
+          alt="Training Hero"
+          className="hero-image"
+          loading="lazy" // ✅ Optional: for performance
+        />
       </motion.div>
     </section>
   );
